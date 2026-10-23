@@ -84,7 +84,145 @@ interface CompanionSearch {
   sus: boolean;
   text_search: string;
 }
-export default class sauceCompanions {
+interface CompanionPayload {
+  access_level: "public";
+
+  advanced_prompt: string | null;
+  card: string;
+
+  companion_profile_banner_crop_x: number | null;
+  companion_profile_banner_crop_y: number | null;
+  companion_profile_banner_crop_zoom: number | null;
+  companion_profile_banner_image: {
+    id: string;
+  } | null;
+  companion_profile_banner_very_sus: boolean;
+
+  display_name: string;
+  example_dialogue: string | null;
+  external_model_policy: string;
+
+  fandom_tags: string[];
+  formatting_instructions: string | null;
+  full_description: string;
+  hidden_fields: number;
+  hide_on_owner_profile: boolean;
+
+  image: {
+    id: string;
+  } | null;
+  image_crop_x: number | null;
+  image_crop_y: number | null;
+  image_crop_zoom: number | null;
+
+  locked_starting_message: boolean;
+  multiple_scenarios: boolean;
+  name: string;
+  open_definition: boolean;
+
+  portraits: {
+    id: string;
+    name: string;
+    description: string;
+    [key: string]: unknown;
+  }[];
+
+  send_notification: boolean;
+  short_description: string;
+  soundcloud_url: string | null;
+
+  starting_scenarios: {
+    id: string | null;
+    message: string;
+    title: string | null;
+    portrait_id: string | null;
+    access_level: "public";
+  }[];
+
+  suppress_companion_profile_banner: boolean;
+  sus: boolean;
+  tags: string[];
+
+  temperature_offset_percentage: number;
+  unlocked_portraits: boolean;
+  very_sus: boolean;
+  voice_catalog_id: string | null;
+}
+interface Companion {
+  companion?: {
+    id?: string;
+    author_id?: string;
+    author_handle?: string;
+    name?: string;
+    display_name?: string;
+    full_description?: string;
+    short_description?: string;
+    tags?: string[];
+    image?: {
+      id?: string;
+    } | null;
+    image_crop_zoom?: number | null;
+    image_crop_x?: number | null;
+    image_crop_y?: number | null;
+    sus?: boolean;
+    very_sus?: boolean;
+    access_level?: string;
+    interaction_count?: number;
+    chat_count?: number;
+    portraits?: {
+      id?: string;
+      name?: string;
+      description?: string;
+      very_sus?: boolean;
+      image?: {
+        id?: string;
+      } | null;
+      gallery_only?: boolean;
+      caption?: string | null;
+    }[];
+    portrait_count?: number;
+    favorite_count?: number;
+    group_count?: number;
+    lorebook_count?: number;
+    has_playbook?: boolean;
+    prompt_count?: number;
+    scenario_count?: number;
+    recipe_count?: number;
+    starting_scenarios?: {
+      access_level?: string;
+      id?: string | null;
+      title?: string | null;
+      message?: string;
+      chat_use_count?: number;
+    }[];
+    locked_starting_message?: boolean;
+    open_definition?: boolean;
+    hidden_fields?: number;
+    providers_profile?: string;
+    unlocked_portraits?: boolean;
+    card_token_count?: number;
+    example_dialogue_token_count?: number;
+    advanced_prompt_token_count?: number;
+    formatting_instructions_token_count?: number;
+    posted_at?: string;
+    updated_at?: string;
+    is_favorited?: boolean;
+    temperature_offset_percentage?: number;
+    score?: number;
+    fandom_tags?: {
+      id?: string;
+      display_name?: string;
+    }[];
+    hide_on_owner_profile?: boolean;
+    preserve_existing_chats?: boolean;
+    folder?: string | null;
+    folder_hue?: number | null;
+    folder_saturation?: number | null;
+    soundcloud_url?: string | null;
+  };
+  did_notify?: boolean;
+}
+export default class SauceCompanions {
   timeoutMs = 60_000 * 5;
   pollIntervalMs = 30_000;
   constructor(
@@ -150,6 +288,27 @@ export default class sauceCompanions {
     return this.http.request<any>(
       `/api/v2/companions/${encodeURIComponent(id)}`,
     );
+  }
+  async createCompanion(companion: CompanionPayload) {
+    this.session.getMe();
+    return this.http.request<Companion>("api/v1/companion", {
+      method: "POST",
+      body: companion,
+    });
+  }
+  async updateCompanion(id: string, companion: CompanionPayload) {
+    this.session.getMe();
+    return this.http.request<Companion>(`api/v1/companion/${id}`, {
+      method: "PATCH",
+      body: companion,
+    });
+  }
+  async deleteCompanion(id: string) {
+    this.session.getMe();
+    return this.http.request<any>(`api/v1/companion`, {
+      method: "DELETE",
+      body: { id: id },
+    });
   }
   async searchCompanions(search: CompanionSearch): Promise<companion[]> {
     this.session.getMe();

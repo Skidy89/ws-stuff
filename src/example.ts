@@ -852,6 +852,238 @@ async function imageMenu(sauce: SaucePan) {
   }
 }
 
+async function communityMenu(sauce: SaucePan) {
+  while (true) {
+    const action = await select<
+      "search" | "post" | "poll" | "vote" | "comment" | "back"
+    >({
+      message: "Community:",
+      choices: [
+        { name: "Search community", value: "search" },
+        { name: "Open post", value: "post" },
+        { name: "Check poll results", value: "poll" },
+        { name: "Vote on poll", value: "vote" },
+        { name: "Comment on post", value: "comment" },
+        { name: "Back", value: "back" },
+      ],
+    });
+    if (action === "back") return;
+
+    if (action === "search") {
+      const tags = splitList(
+        await input({ message: "Tags (comma separated, optional):" }),
+      );
+      const result = await step("Searching community", () =>
+        sauce.community.searchCommunity({
+          limit: 20,
+          offset: 0,
+          poll_filter: "all",
+          prompt_filter: "all",
+          tags: tags.length ? tags : null,
+        }),
+      );
+      console.dir(result, { depth: 4, colors: true });
+    } else if (action === "post") {
+      const handle = await input({ message: "Author handle:" });
+      const blurb = await input({ message: "Post blurb/slug:" });
+      console.dir(
+        await step("Loading post", () =>
+          sauce.community.checkPost(handle, blurb),
+        ),
+        { depth: 5, colors: true },
+      );
+    } else if (action === "poll") {
+      const id = await input({ message: "Poll/post ID:" });
+      console.dir(
+        await step("Loading poll results", () =>
+          sauce.community.checkResultsForPoll(id),
+        ),
+        { depth: 4, colors: true },
+      );
+    } else if (action === "vote") {
+      const id = await input({ message: "Poll/post ID:" });
+      const optionIds = splitList(
+        await input({ message: "Option IDs to vote for (comma separated):" }),
+      );
+      if (optionIds.length)
+        console.log(
+          await step("Submitting vote", () =>
+            sauce.community.voteOnPoll(id, optionIds),
+          ),
+        );
+    } else {
+      const id = await input({ message: "Post ID:" });
+      const comment = await input({ message: "Comment:" });
+      console.log(
+        await step("Posting comment", () =>
+          sauce.community.commentOnPost(id, comment),
+        ),
+      );
+    }
+  }
+}
+
+async function lorebookMenu(sauce: SaucePan) {
+  while (true) {
+    const action = await select<"create" | "update" | "delete" | "back">({
+      message: "Lorebooks:",
+      choices: [
+        { name: "Create lorebook", value: "create" },
+        { name: "Update lorebook", value: "update" },
+        { name: "Delete lorebook", value: "delete" },
+        { name: "Back", value: "back" },
+      ],
+    });
+    if (action === "back") return;
+    if (action === "create" || action === "update") {
+      const image = await pickImage(sauce);
+      const lorebook = {
+        access_level: "private" as const,
+        content: [
+          {
+            title: await input({ message: "Entry title:" }),
+            text: await input({ message: "Entry text:" }),
+          },
+        ],
+        definition_protection: "open",
+        fandom_tags: [] as string[],
+        hide_on_owner_profile: false,
+        image_crop_x: null,
+        image_crop_y: null,
+        image_crop_zoom: null,
+        image_id: image.image.id,
+        name: await input({ message: "Lorebook name:" }),
+        nsfw: false,
+        send_notification: false,
+        short_description: await input({ message: "Short description:" }),
+        table_of_contents_level: 0,
+        tags: splitList(await input({ message: "Tags (comma separated):" })),
+        very_nsfw: false,
+      };
+      if (action === "create")
+        console.dir(
+          await step("Creating lorebook", () =>
+            sauce.lorebooks.uploadLorebook(lorebook),
+          ),
+          { depth: 4, colors: true },
+        );
+      else {
+        const id = await input({ message: "Lorebook ID:" });
+        console.dir(
+          await step("Updating lorebook", () =>
+            sauce.lorebooks.updateLorebook(id, lorebook),
+          ),
+          { depth: 4, colors: true },
+        );
+      }
+    } else {
+      const id = await input({ message: "Lorebook ID:" });
+      if (await confirm({ message: `Delete lorebook ${id}?`, default: false }))
+        console.dir(
+          await step("Deleting lorebook", () =>
+            sauce.lorebooks.deleteLorebook(id),
+          ),
+          { depth: 3, colors: true },
+        );
+    }
+  }
+}
+
+async function companionManagementMenu(sauce: SaucePan) {
+  while (true) {
+    const action = await select<"create" | "update" | "delete" | "back">({
+      message: "Manage companions:",
+      choices: [
+        { name: "Create companion", value: "create" },
+        { name: "Update companion", value: "update" },
+        { name: "Delete companion", value: "delete" },
+        { name: "Back", value: "back" },
+      ],
+    });
+    if (action === "back") return;
+    if (action === "delete") {
+      const id = await input({ message: "Companion ID:" });
+      if (await confirm({ message: `Delete companion ${id}?`, default: false }))
+        console.dir(
+          await step("Deleting companion", () =>
+            sauce.companions.deleteCompanion(id),
+          ),
+          { depth: 3, colors: true },
+        );
+      continue;
+    }
+    const image = await pickImage(sauce);
+    const payload = {
+      name: await input({ message: "Internal name:" }),
+      display_name: await input({ message: "Display name:" }),
+      short_description: await input({ message: "Short description:" }),
+      full_description: await input({ message: "Full description:" }),
+      card: await input({ message: "Character card:" }),
+
+      access_level: "public" as const,
+      advanced_prompt: null,
+      example_dialogue: null,
+      external_model_policy: "vetted_only",
+      fandom_tags: [],
+      formatting_instructions: null,
+      hidden_fields: 28,
+      hide_on_owner_profile: false,
+
+      image: { id: image.image.id },
+      image_crop_x: null,
+      image_crop_y: null,
+      image_crop_zoom: null,
+
+      companion_profile_banner_crop_x: null,
+      companion_profile_banner_crop_y: null,
+      companion_profile_banner_crop_zoom: null,
+      companion_profile_banner_image: null,
+      companion_profile_banner_very_sus: false,
+      suppress_companion_profile_banner: false,
+
+      locked_starting_message: false,
+      multiple_scenarios: false,
+      open_definition: false,
+      portraits: [],
+      send_notification: false,
+
+      soundcloud_url: null,
+      starting_scenarios: [
+        {
+          id: null,
+          message: await input({ message: "Starting message:" }),
+          title: null,
+          portrait_id: null,
+          access_level: "public" as const,
+        },
+      ],
+
+      sus: true,
+      tags: splitList(await input({ message: "Tags (comma separated):" })),
+      temperature_offset_percentage: 0,
+      unlocked_portraits: true,
+      very_sus: false,
+      voice_catalog_id: null,
+    };
+    if (action === "create")
+      console.dir(
+        await step("Creating companion", () =>
+          sauce.companions.createCompanion(payload),
+        ),
+        { depth: 4, colors: true },
+      );
+    else {
+      const id = await input({ message: "Companion ID:" });
+      console.dir(
+        await step("Updating companion", () =>
+          sauce.companions.updateCompanion(id, payload),
+        ),
+        { depth: 4, colors: true },
+      );
+    }
+  }
+}
+
 async function main() {
   printBanner();
 
@@ -882,8 +1114,11 @@ async function main() {
       },
     },
     { name: "Open companion by ID", run: () => openById(sauce) },
+    { name: "Manage companions", run: () => companionManagementMenu(sauce) },
     { name: "Personas", run: () => personaMenu(sauce) },
     { name: "Images", run: () => imageMenu(sauce) },
+    { name: "Community", run: () => communityMenu(sauce) },
+    { name: "Lorebooks", run: () => lorebookMenu(sauce) },
     {
       name: "Account",
       run: async () => {

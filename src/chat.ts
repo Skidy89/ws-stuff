@@ -1,4 +1,4 @@
-import sauceCompanions from "./companions.js";
+import SauceCompanions from "./companions.js";
 import type { Persona } from "./persona.js";
 import type Requester from "./requester.js";
 import type { Session } from "./session.js";
@@ -116,11 +116,11 @@ type MessageData = {
 };
 
 const DEFAULT_MODEL = "chat-arita";
-export default class sauceChat {
+export default class SauceChat {
   constructor(
     private readonly http: Requester,
     private readonly session: Session,
-    private readonly companions: sauceCompanions,
+    private readonly companions: SauceCompanions,
   ) {}
   private async findLatestChatId(companionId: string): Promise<string | null> {
     this.session.getMe();
