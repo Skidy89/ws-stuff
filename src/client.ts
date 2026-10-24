@@ -25,7 +25,7 @@ export default class SaucePan {
     this.lorebooks = new SauceLorebook(http, this.session);
     this.community = new SauceCommunity(http, this.session);
   }
-  authenticate() {
+  async authenticate() {
     return this.session.authenticateMe();
   }
   get account() {

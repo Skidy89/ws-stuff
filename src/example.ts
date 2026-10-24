@@ -425,6 +425,7 @@ async function vibeSearch(sauce: SaucePan): Promise<Companion | null> {
       },
       seconds * 1000,
       AbortSignal.timeout(6 * 60_000),
+      true,
     ),
   );
 

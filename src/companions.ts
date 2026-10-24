@@ -234,6 +234,7 @@ export default class SauceCompanions {
     search: CompanionVibeSearch,
     interval?: number,
     signal?: AbortSignal,
+    showsteps = false,
   ): Promise<companion[]> {
     const data = await this.http.request<any>("/api/v2/companion-searches", {
       method: "POST",
@@ -254,7 +255,7 @@ export default class SauceCompanions {
       },
     });
     const searchId = data.id;
-    let status: "running" | "completed" | "insufficient_results" = "running";
+    let status: "waiting" | "running" | "completed" | "insufficient_results" = "running";
     let step: string | null = null;
     const deadline = Date.now() + this.timeoutMs;
     while (Date.now() < deadline) {
@@ -265,10 +266,11 @@ export default class SauceCompanions {
       );
       status = poll.state.status;
       step = poll.state.step;
+      if (showsteps) {
+        console.log(`Search status: ${status}, step: ${step}`);
+      }
       if (
-        step === undefined ||
-        step === null ||
-        status === "insufficient_results"
+        status === "insufficient_results" || status === null
       ) {
         throw new Error("Search failed or returned insufficient results");
       }
