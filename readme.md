@@ -158,9 +158,9 @@ const companion = cli.companions.createCompanion({
     very_sus: false,
     voice_catalog_id: null
 })
+```
 
 > [!WARNING]
 > companions require a image id, and tags
 > tags cant be made up, soon i will type all the tags i can collect without dying
 > if you dont attach a *tag* or *image* the server will reject your companion
-

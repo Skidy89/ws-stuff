@@ -222,6 +222,10 @@ interface Companion {
   };
   did_notify?: boolean;
 }
+
+// seriusly tho, who was the genius that made those endpoints so ANNOYING
+// i hate this project, i hate this engineer, it would be x100 time easier if they put a ws instead.
+// REALLY IM ANNOYED OFF ONLY WRITTING TYPES, SLOW AND STEADY
 export default class SauceCompanions {
   timeoutMs = 60_000 * 5;
   pollIntervalMs = 30_000;
@@ -255,7 +259,8 @@ export default class SauceCompanions {
       },
     });
     const searchId = data.id;
-    let status: "waiting" | "running" | "completed" | "insufficient_results" = "running";
+    let status: "waiting" | "running" | "completed" | "insufficient_results" =
+      "running";
     let step: string | null = null;
     const deadline = Date.now() + this.timeoutMs;
     while (Date.now() < deadline) {
@@ -269,9 +274,7 @@ export default class SauceCompanions {
       if (showsteps) {
         console.log(`Search status: ${status}, step: ${step}`);
       }
-      if (
-        status === "insufficient_results" || status === null
-      ) {
+      if (status === "insufficient_results" || status === null) {
         throw new Error("Search failed or returned insufficient results");
       }
       if (status === "completed") {
@@ -290,6 +293,11 @@ export default class SauceCompanions {
     return this.http.request<any>(
       `/api/v2/companions/${encodeURIComponent(id)}`,
     );
+  }
+  async getMyCompanionsChats(offset = 0, limit = 24): Promise<companion[]> {
+    this.session.getMe();
+    const data = await this.http.request<any>(`/api/v1/chats/companions?filter=all&sort_by=last_message_desc&sort_asc=false&show_nsfw=true&favorites_only=false&chats_per_companion=3&limit=${limit}&offset=${offset}`);
+    return data.companions;
   }
   async createCompanion(companion: CompanionPayload) {
     this.session.getMe();
@@ -334,5 +342,26 @@ export default class SauceCompanions {
       method: "POST",
     });
     return data.companions;
+  }
+  async attachLorebookToCompanion(chatId: string, lorebook_ids: string[]) {
+    this.session.getMe();
+    return this.http.request<any>(`/api/v1/chat-lorebook-relationships/${chatId}`, {
+      method: "POST",
+      body: { lorebook_ids },
+    });
+  }
+  async lookOutCompanionPortraits(companionIds: string[]) {
+    this.session.getMe();
+    // todo: add types
+    const data = await this.http.request<any>("/api/v1/companions/unlocked-portraits-batch", {
+      method: "POST",
+      body: { companion_ids: companionIds },
+    });
+    return data;
+  }
+  async companionNsfwImages(chatId: string): Promise<string[]> {
+    this.session.getMe();
+    const data = await this.http.request<any>(`https://saucepan.ai/api/v1/chat/very-sus-images?chat_id=${chatId}`);
+    return data.image_ids;
   }
 }
