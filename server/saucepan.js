@@ -1,4 +1,4 @@
-import { SaucePan } from "../src/index.ts";
+import { SaucePan } from "../dist/server/saucepan.js";
 
 export async function getSaucePan() {
   const token = process.env.BEARER;
@@ -10,5 +10,10 @@ export async function getSaucePan() {
 
 export function sendError(res, error, message) {
   console.error(message, error);
-  res.status(500).json({ error: message });
+  if (!process.env.BEARER) {
+    return res.status(503).json({
+      error: "Server configuration is missing BEARER. Add it in Vercel Project Settings → Environment Variables, then redeploy.",
+    });
+  }
+  return res.status(502).json({ error: message });
 }

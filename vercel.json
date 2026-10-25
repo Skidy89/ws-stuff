@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "vite build",
+  "buildCommand": "vite build && vite build --config vite.server.config.js",
   "outputDirectory": "html/dist",
   "functions": {
     "api/**/*.js": {
