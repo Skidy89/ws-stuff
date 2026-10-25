@@ -120,10 +120,7 @@ const searchDir = fileURLToPath(new URL("./search/", import.meta.url));
 app.use("/chat", express.static(chatDir));
 app.get("/chat", async (_req, res, next) => {
   try {
-    const html = await readFile(
-      path.join(chatDir, "chat.html"),
-      "utf8",
-    );
+    const html = await readFile(path.join(chatDir, "chat.html"), "utf8");
 
     res.type("html").send(html);
   } catch (error) {
@@ -133,10 +130,7 @@ app.get("/chat", async (_req, res, next) => {
 app.use(express.static(searchDir));
 app.get("/", async (_req, res, next) => {
   try {
-    const html = await readFile(
-      path.join(searchDir, "page.html"),
-      "utf8",
-    );
+    const html = await readFile(path.join(searchDir, "page.html"), "utf8");
 
     res.type("html").send(html);
   } catch (error) {

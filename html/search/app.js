@@ -32,28 +32,33 @@ function renderCompanion(companion) {
   const fragment = template.content.cloneNode(true);
   const article = fragment.querySelector(".companion");
 
-  article.querySelector(".start-chat").addEventListener("click", async (event) => {
-    const button = event.currentTarget;
+  article
+    .querySelector(".start-chat")
+    .addEventListener("click", async (event) => {
+      const button = event.currentTarget;
 
-    try {
-      button.disabled = true;
+      try {
+        button.disabled = true;
 
-      const response = await fetch(`/api/create-chat/${encodeURIComponent(companion.id)}`, {
-        method: "POST",
-      });
+        const response = await fetch(
+          `/api/create-chat/${encodeURIComponent(companion.id)}`,
+          {
+            method: "POST",
+          },
+        );
 
-      if (!response.ok) {
-        throw new Error("Failed to create chat");
+        if (!response.ok) {
+          throw new Error("Failed to create chat");
+        }
+
+        const payload = await response.json();
+        sessionStorage.setItem(`chat:${companion.id}`, JSON.stringify(payload));
+        window.location.href = `/chat/${encodeURIComponent(companion.id)}`;
+      } catch (error) {
+        console.error("Error creating chat:", error);
+        button.disabled = false;
       }
-
-      const payload = await response.json();
-      sessionStorage.setItem(`chat:${companion.id}`, JSON.stringify(payload));
-      window.location.href = `/chat/${encodeURIComponent(companion.id)}`;
-    } catch (error) {
-      console.error("Error creating chat:", error);
-      button.disabled = false;
-    }
-  });
+    });
 
   article.querySelector(".name").textContent =
     companion.display_name ?? "Unnamed companion";
