@@ -1,8 +1,12 @@
 "use strict";
 
+const USER_AVATAR =
+  "https://avatars.githubusercontent.com/u/112231743?s=96&v=4";
+
 const form = document.querySelector("#chat-form");
 const input = document.querySelector("#message-input");
 const messagesContainer = document.querySelector("#messages");
+const indicator = document.querySelector("#typingIndicator");
 const params = new URLSearchParams(window.location.search);
 const companionId = decodeURIComponent(
   window.location.pathname.split("/").filter(Boolean).at(-1) ||
@@ -15,10 +19,30 @@ const profileName = document.querySelector("#companion-name");
 const profileDescription = document.querySelector("#companion-description");
 let chatData = null;
 
-function imageUrl(image) {
+function imageId(image) {
   if (!image) return "";
-  if (/^https?:\/\//i.test(image)) return image;
-  return `https://saucepan.ai/cdn/${encodeURIComponent(image)}/highres`;
+  if (typeof image === "string") return image;
+  return imageId(image.image) || image.id || image.url || "";
+}
+
+function imageUrl(image) {
+  const value = imageId(image);
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return `https://saucepan.ai/cdn/${encodeURIComponent(value)}/highres`;
+}
+
+function setImage(img, url) {
+  img.referrerPolicy = "no-referrer";
+  img.addEventListener("error", () => {
+    img.hidden = true;
+  });
+  if (url) {
+    img.src = url;
+    img.hidden = false;
+  } else {
+    img.hidden = true;
+  }
 }
 
 function showProfile(companion) {
@@ -26,13 +50,7 @@ function showProfile(companion) {
   profileName.textContent =
     companion.display_name || companion.name || "Companion";
   profileDescription.textContent = companion.short_description || "";
-  const url = imageUrl(companion.image?.id || companion.image);
-  if (url) {
-    profileImage.src = url;
-    profileImage.hidden = false;
-  } else {
-    profileImage.hidden = true;
-  }
+  setImage(profileImage, imageUrl(companion.image));
   profile.hidden = false;
 }
 
@@ -43,16 +61,15 @@ function appendMessage(message, companion) {
 
   const heading = document.createElement("div");
   heading.className = "message-heading";
+
   const avatar = document.createElement("img");
   avatar.className = "message-avatar";
   avatar.alt = "";
-  const portrait =
-    imageUrl(message.portrait) ||
-    (!isUser
-      ? imageUrl(companion?.image)
-      : "https://avatars.githubusercontent.com/u/112231743?s=96&v=4");
-  if (portrait) avatar.src = portrait;
-  else avatar.hidden = true;
+  const portrait = isUser
+    ? USER_AVATAR
+    : imageUrl(message.portrait) || imageUrl(companion?.image);
+  setImage(avatar, portrait);
+
   const author = document.createElement("strong");
   author.textContent = isUser
     ? message.author || "You"
@@ -112,7 +129,6 @@ form.addEventListener("submit", async (event) => {
   const content = input.value.trim();
   if (!content || !companionId) return;
   input.disabled = true;
-  const indicator = document.querySelector("#typingIndicator");
   try {
     input.value = "";
     indicator.style.display = "flex";
@@ -141,9 +157,7 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-const indicator = document.querySelector("#typingIndicator");
 loadChat().catch((error) => {
   console.error(error);
-  document.querySelector("#messages").textContent =
-    error.message || "Unable to load this chat.";
+  messagesContainer.textContent = error.message || "Unable to load this chat.";
 });
