@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SaucePan</title>
+    <link rel="stylesheet" href="./page.css">
+    <script src="./app.js" defer></script>
+</head>
+<body>
+    <main>
+        <h1>SaucePan</h1>
+
+        <form id="searchForm">
+            <input
+                id="query"
+                name="query"
+                placeholder="Search companions..."
+                required
+            >
+            <button type="submit">Search</button>
+        </form>
+
+        <p id="status" role="status" aria-live="polite"></p>
+
+        <section id="results" aria-label="Search results"></section>
+
+        <template id="companionTemplate">
+    <article class="companion">
+        <img class="portrait" alt="Companion portrait" loading="lazy">
+        <h2 class="name"></h2>
+        <p class="description"></p>
+        <p class="author"></p>
+        <button class="start-chat">Start chat</button>
+    </article>
+</template>
+    </main>
+</body>
+</html>

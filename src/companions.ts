@@ -296,7 +296,9 @@ export default class SauceCompanions {
   }
   async getMyCompanionsChats(offset = 0, limit = 24): Promise<companion[]> {
     this.session.getMe();
-    const data = await this.http.request<any>(`/api/v1/chats/companions?filter=all&sort_by=last_message_desc&sort_asc=false&show_nsfw=true&favorites_only=false&chats_per_companion=3&limit=${limit}&offset=${offset}`);
+    const data = await this.http.request<any>(
+      `/api/v1/chats/companions?filter=all&sort_by=last_message_desc&sort_asc=false&show_nsfw=true&favorites_only=false&chats_per_companion=3&limit=${limit}&offset=${offset}`,
+    );
     return data.companions;
   }
   async createCompanion(companion: CompanionPayload) {
@@ -345,23 +347,31 @@ export default class SauceCompanions {
   }
   async attachLorebookToCompanion(chatId: string, lorebook_ids: string[]) {
     this.session.getMe();
-    return this.http.request<any>(`/api/v1/chat-lorebook-relationships/${chatId}`, {
-      method: "POST",
-      body: { lorebook_ids },
-    });
+    return this.http.request<any>(
+      `/api/v1/chat-lorebook-relationships/${chatId}`,
+      {
+        method: "POST",
+        body: { lorebook_ids },
+      },
+    );
   }
   async lookOutCompanionPortraits(companionIds: string[]) {
     this.session.getMe();
     // todo: add types
-    const data = await this.http.request<any>("/api/v1/companions/unlocked-portraits-batch", {
-      method: "POST",
-      body: { companion_ids: companionIds },
-    });
+    const data = await this.http.request<any>(
+      "/api/v1/companions/unlocked-portraits-batch",
+      {
+        method: "POST",
+        body: { companion_ids: companionIds },
+      },
+    );
     return data;
   }
   async companionNsfwImages(chatId: string): Promise<string[]> {
     this.session.getMe();
-    const data = await this.http.request<any>(`https://saucepan.ai/api/v1/chat/very-sus-images?chat_id=${chatId}`);
+    const data = await this.http.request<any>(
+      `https://saucepan.ai/api/v1/chat/very-sus-images?chat_id=${chatId}`,
+    );
     return data.image_ids;
   }
 }

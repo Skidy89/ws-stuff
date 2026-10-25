@@ -1,4 +1,3 @@
-
 import type Requester from "./requester.js";
 import type { Session } from "./session.js";
 // this is a headcache.
@@ -11,8 +10,9 @@ import type { Session } from "./session.js";
  * im not sure if changes generation, calling it on a party makes live status enter into "pre_voting_generating"
  */
 
-
 export default class SauceParties {
-    constructor(private readonly http: Requester, private readonly session: Session) {}
-    
+  constructor(
+    private readonly http: Requester,
+    private readonly session: Session,
+  ) {}
 }

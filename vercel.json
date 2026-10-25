@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "buildCommand": "vite build",
+  "outputDirectory": "html/dist",
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 300
+    }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/search/page.html" },
+    { "source": "/chat/:companionId", "destination": "/chat/chat.html" }
+  ]
+}

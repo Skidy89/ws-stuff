@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="/chat/chat.css">
+    <script src="/chat/chat.js" defer></script>
+</head>
+<body>
+    <header id="chat-profile" class="chat-profile" aria-label="Companion profile" hidden>
+        <img id="companion-avatar" class="profile-avatar" alt="">
+        <div>
+            <h1 id="companion-name"></h1>
+            <p id="companion-description"></p>
+        </div>
+    </header>
+    <div id="messages">   
+    </div>
+    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+        <span>Companion is typing...</span>
+    </div>
+
+    <form id="chat-form">
+        <input
+            type="text"
+            id="message-input"
+            placeholder="Write a message..."
+            autocomplete="off"
+            required
+        >
+        <button type="submit">Send</button>
+    </form>
+</body>
+</html>

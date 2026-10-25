@@ -1,0 +1,129 @@
+
+body {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: system-ui, sans-serif;
+    background: #111;
+    color: #eee;
+}
+
+form {
+    display: flex;
+    gap: 8px;
+}
+
+input,
+
+
+input {
+    flex: 1;
+    min-width: 0;
+    background: #222;
+    color: white;
+}
+
+
+#searchForm {
+    display: flex;
+    gap: 8px;
+}
+
+#searchForm input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
+    background: #222;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 6px;
+}
+
+#searchForm button {
+    appearance: none;
+    padding: 6px 16px;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    background: #FAFBFC;
+    color: #24292E;
+    font: 500 14px/20px system-ui, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#searchForm button:hover {
+    background: #F3F4F6;
+}
+
+#searchForm button:active {
+    background: #EDEFF2;
+}
+
+#searchForm button:disabled {
+    color: #959DA5;
+    cursor: default;
+}
+
+#results {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.companion {
+    padding: 16px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.portrait {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: filter 0.2s ease;
+}
+
+.portrait.sus {
+    filter: blur(8px);
+}
+
+.portrait.sus:hover {
+    filter: blur(0);
+}
+
+.description {
+    color: #aaa;
+    white-space: pre-wrap;
+}
+
+.author {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.start-chat {
+    appearance: none;
+    padding: 6px 16px;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    background: #1f20223f;
+    color: #f9fcff;
+    font: 500 14px/20px system-ui, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.start-chat:hover {
+    background: #000000;
+}
+
+.start-chat:active {
+    background: #6e6f70;
+}
+
+.start-chat:disabled {
+    color: #959DA5;
+    cursor: default;
+}

@@ -117,9 +117,12 @@ export default class SaucePlaybooks {
   }
   async deletePlaybook(playbookId: string): Promise<void> {
     this.session.getMe();
-    const request = await this.http.request<void>(`/api/v2/playbooks/${playbookId}`, {
-      method: "DELETE",
-    });
+    const request = await this.http.request<void>(
+      `/api/v2/playbooks/${playbookId}`,
+      {
+        method: "DELETE",
+      },
+    );
     return request;
   }
 }
